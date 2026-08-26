@@ -2,42 +2,234 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Registrador</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 60px; }
-        #btn { font-size: 24px; padding: 20px 40px; cursor: pointer; border-radius: 10px; }
-        #contador { font-size: 20px; margin-top: 20px; }
-        #historico { margin-top: 40px; text-align: left; display: inline-block; }
+        :root {
+            --bg: #0f172a;
+            --bg-alt: #1e293b;
+            --card: #1e293b;
+            --border: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent: #6366f1;
+            --accent-hover: #818cf8;
+            --accent-2: #22c55e;
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at top, var(--bg-alt), var(--bg) 70%);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 24px 16px 48px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        h1 {
+            font-size: clamp(1.5rem, 5vw, 1.9rem);
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 6px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .card + .card {
+            margin-top: 0;
+        }
+
+        #btn {
+            width: 100%;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 18px 24px;
+            cursor: pointer;
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+            box-shadow: 0 8px 20px -8px rgba(99, 102, 241, 0.6);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px -8px rgba(99, 102, 241, 0.7);
+        }
+
+        #btn:active {
+            transform: translateY(0);
+            opacity: 0.9;
+        }
+
+        #btn:disabled {
+            opacity: 0.6;
+            cursor: default;
+            transform: none;
+        }
+
+        #contador {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin: 16px 0 0;
+        }
+
+        #contador strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .card h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0 0 4px;
+            color: var(--text);
+        }
+
+        #media-geral {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--accent-2);
+            margin: 4px 0 18px;
+        }
+
+        #historico {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .historico-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        .historico-row .data {
+            color: var(--text-muted);
+        }
+
+        .historico-row .valor {
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 12px 0;
+        }
+
+        @media (max-width: 380px) {
+            .card {
+                padding: 18px;
+            }
+
+            #btn {
+                padding: 16px 20px;
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>Contador de Copas</h1>
-    <button id="btn">{{ 'Registrar Início' if proximo_tipo == 'inicio' else 'Registrar Fim' }}</button>
-    <p id="contador">Registros hoje: {{ contador }}</p>
+    <div class="container">
+        <header>
+            <h1>Contador de Copas</h1>
+            <p class="subtitle">Registre seus intervalos e acompanhe as médias</p>
+        </header>
 
-    <h3>Média de sessões</h3>
-    <p id="media-geral">Carregando...</p>
-    <div id="historico"></div>
+        <section class="card">
+            <button id="btn">{{ 'Registrar Início' if proximo_tipo == 'inicio' else 'Registrar Fim' }}</button>
+            <p id="contador">Registros hoje: <strong>{{ contador }}</strong></p>
+        </section>
+
+        <section class="card">
+            <h2>Média geral</h2>
+            <p id="media-geral">Carregando...</p>
+            <h2>Histórico por dia</h2>
+            <div id="historico">
+                <p class="empty-state">Carregando...</p>
+            </div>
+        </section>
+    </div>
 
     <script>
         const btn = document.getElementById("btn");
         const contadorEl = document.getElementById("contador");
 
         btn.addEventListener("click", async () => {
-            const res = await fetch("/registrar", { method: "POST" });
-            const data = await res.json();
-            btn.textContent = data.proximo_tipo === "inicio" ? "Registrar Início" : "Registrar Fim";
-            contadorEl.textContent = "Registros hoje: " + data.contador;
-            carregarMedia();
+            btn.disabled = true;
+            try {
+                const res = await fetch("/registrar", { method: "POST" });
+                const data = await res.json();
+                btn.textContent = data.proximo_tipo === "inicio" ? "Registrar Início" : "Registrar Fim";
+                contadorEl.innerHTML = "Registros hoje: <strong>" + data.contador + "</strong>";
+                await carregarMedia();
+            } finally {
+                btn.disabled = false;
+            }
         });
 
         async function carregarMedia() {
             const res = await fetch("/api/media");
             const data = await res.json();
-            document.getElementById("media-geral").textContent = "Média geral: " + data.media_geral;
+            document.getElementById("media-geral").textContent = data.media_geral;
+
             const historicoEl = document.getElementById("historico");
-            historicoEl.innerHTML = "<b>Histórico por dia:</b><br>" +
-                data.historico.map(h => `${h.data}: ${h.media}`).join("<br>");
+            if (!data.historico.length) {
+                historicoEl.innerHTML = '<p class="empty-state">Nenhum registro ainda</p>';
+                return;
+            }
+            historicoEl.innerHTML = data.historico.map(h =>
+                `<div class="historico-row"><span class="data">${h.data}</span><span class="valor">${h.media}</span></div>`
+            ).join("");
         }
 
         carregarMedia();
