@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrador</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 60px; }
+        #btn { font-size: 24px; padding: 20px 40px; cursor: pointer; border-radius: 10px; }
+        #contador { font-size: 20px; margin-top: 20px; }
+        #historico { margin-top: 40px; text-align: left; display: inline-block; }
+    </style>
+</head>
+<body>
+    <h1>Registrador</h1>
+    <button id="btn">{{ 'Registrar Início' if proximo_tipo == 'inicio' else 'Registrar Fim' }}</button>
+    <p id="contador">Registros hoje: {{ contador }}</p>
+
+    <h3>Média de sessões</h3>
+    <p id="media-geral">Carregando...</p>
+    <div id="historico"></div>
+
+    <script>
+        const btn = document.getElementById("btn");
+        const contadorEl = document.getElementById("contador");
+
+        btn.addEventListener("click", async () => {
+            const res = await fetch("/registrar", { method: "POST" });
+            const data = await res.json();
+            btn.textContent = data.proximo_tipo === "inicio" ? "Registrar Início" : "Registrar Fim";
+            contadorEl.textContent = "Registros hoje: " + data.contador;
+            carregarMedia();
+        });
+
+        async function carregarMedia() {
+            const res = await fetch("/api/media");
+            const data = await res.json();
+            document.getElementById("media-geral").textContent = "Média geral: " + data.media_geral;
+            const historicoEl = document.getElementById("historico");
+            historicoEl.innerHTML = "<b>Histórico por dia:</b><br>" +
+                data.historico.map(h => `${h.data}: ${h.media}`).join("<br>");
+        }
+
+        carregarMedia();
+    </script>
+</body>
+</html>
